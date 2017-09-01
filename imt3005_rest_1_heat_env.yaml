@@ -1,0 +1,11 @@
+parameters:
+  key_name: erikhje
+  public_net: ext-net
+  sec_group_lin: default,linux
+  sec_group_win: default,windows
+  manager_ip: 192.168.180.106
+  dir01_ip: 192.168.190.102
+  admin_net: c804fe2b-f92e-4237-a9ac-c2aad4bf58c0
+  admin_subnet: 1022cf55-2ee2-4841-b26b-c27a72afbf96
+  internal_net: 56564b87-bd0b-4e51-8502-e95db2246c1a
+  internal_subnet: 680cb3f6-9f02-4d84-984d-e5daafc58ff4
