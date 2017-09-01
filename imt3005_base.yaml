@@ -11,39 +11,23 @@ parameters:
   key_name:
     type: string
     description: Name of keypair to assign to servers
-  name_lin1:
-    type: string
-    description: Name of linux server
-    default: manager
-  image_lin1:
+  image_linux:
     type: string
     description: Name of image to use for servers
     default: Ubuntu Server 16.04 LTS (Xenial Xerus) amd64
-  flavor_lin1:
-    type: string
-    description: Flavor to use for servers
-    default: m1.medium
-  name_lin2:
-    type: string
-    description: Name of linux server
-    default: monitor
-  image_lin2:
-    type: string
-    description: Name of image to use for servers
-    default: Ubuntu Server 16.04 LTS (Xenial Xerus) amd64
-  flavor_lin2:
-    type: string
-    description: Flavor to use for servers
-    default: m1.large
-  name_win:
-    type: string
-    description: Name of windows server
-    default: dir01
-  image_win:
+  image_windows:
     type: string
     description: Name of image to use for servers
     default: Windows Server 2016 Std Eval
-  flavor_win:
+  flavor_manager:
+    type: string
+    description: Flavor to use for servers
+    default: m1.medium
+  flavor_monitor:
+    type: string
+    description: Flavor to use for servers
+    default: m1.large
+  flavor_dir01:
     type: string
     description: Flavor to use for servers
     default: m1.large
@@ -91,10 +75,10 @@ parameters:
     type: string
     description: End of internal network IP address allocation pool
     default: 192.168.190.199
-  sec_group_lin:
+  sec_group_linux:
     type: comma_delimited_list
     description: Security groups
-  sec_group_win:
+  sec_group_windows:
     type: comma_delimited_list
     description: Security groups
 
@@ -129,7 +113,6 @@ resources:
         - start: { get_param: internal_net_pool_start }
           end: { get_param: internal_net_pool_end }
 
-
   router:
     type: OS::Neutron::Router
     properties:
@@ -148,104 +131,89 @@ resources:
       router_id: { get_resource: router }
       subnet_id: { get_resource: internal_subnet }
 
-
-  server1:
+  manager:
     type: OS::Nova::Server
     properties:
-      name: { get_param: name_lin1 }
-      image: { get_param: image_lin1 }
-      flavor: { get_param: flavor_lin1 }
+      name: manager
+      image: { get_param: image_linux }
+      flavor: { get_param: flavor_manager }
       key_name: { get_param: key_name }
       networks:
-        - port: { get_resource: server1_port }
+        - port: { get_resource: manager_port }
 
-  server1_port:
+  manager_port:
     type: OS::Neutron::Port
     properties:
       network_id: { get_resource: admin_net }
-      security_groups: { get_param: sec_group_lin }
+      security_groups: { get_param: sec_group_linux }
       fixed_ips:
         - subnet_id: { get_resource: admin_subnet }
 
-  server1_floating_ip:
+  manager_floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
       floating_network: { get_param: public_net }
-      port_id: { get_resource: server1_port }
+      port_id: { get_resource: manager_port }
 
-  server3:
+  monitor:
     type: OS::Nova::Server
     properties:
-      name: { get_param: name_lin2 }
-      image: { get_param: image_lin2 }
-      flavor: { get_param: flavor_lin2 }
+      name: monitor
+      image: { get_param: image_linux }
+      flavor: { get_param: flavor_monitor }
       key_name: { get_param: key_name }
       networks:
-        - port: { get_resource: server3_port }
+        - port: { get_resource: monitor_port }
 
-  server3_port:
+  monitor_port:
     type: OS::Neutron::Port
     properties:
       network_id: { get_resource: admin_net }
-      security_groups: { get_param: sec_group_lin }
+      security_groups: { get_param: sec_group_linux }
       fixed_ips:
         - subnet_id: { get_resource: admin_subnet }
 
-  server3_floating_ip:
+  monitor_floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
       floating_network: { get_param: public_net }
-      port_id: { get_resource: server3_port }
+      port_id: { get_resource: monitor_port }
 
-  server2:
+  dir01:
     type: OS::Nova::Server
     properties:
-      name: { get_param: name_win }
-      image: { get_param: image_win }
-      flavor: { get_param: flavor_win }
+      name: dir01
+      image: { get_param: image_windows }
+      flavor: { get_param: flavor_dir01 }
       key_name: { get_param: key_name }
       networks:
-        - port: { get_resource: server2_port_internal }
-        - port: { get_resource: server2_port_admin }
+        - port: { get_resource: dir01_port_admin }
+        - port: { get_resource: dir01_port_internal }
 
-  server2_port_admin:
+  dir01_port_admin:
     type: OS::Neutron::Port
     properties:
       network_id: { get_resource: admin_net }
-      security_groups: { get_param: sec_group_win }
+      security_groups: { get_param: sec_group_windows }
       fixed_ips:
         - subnet_id: { get_resource: admin_subnet }
 
-  server2_port_internal:
+  dir01_port_internal:
     type: OS::Neutron::Port
     properties:
       network_id: { get_resource: internal_net }
-      security_groups: { get_param: sec_group_win }
+      security_groups: { get_param: sec_group_windows }
       fixed_ips:
         - subnet_id: { get_resource: internal_subnet }
 
-  server2_floating_ip:
+  dir01_floating_ip:
     type: OS::Neutron::FloatingIP
     properties:
       floating_network: { get_param: public_net }
-      port_id: { get_resource: server2_port_internal }
+      port_id: { get_resource: dir01_port_internal }
 
 outputs:
-  server1_admin_ip:
-    description: IP address of server1 in admin network
-    value: { get_attr: [ server1, first_address ] }
-  server1_public_ip:
-    description: Floating IP address of server1 in public network
-    value: { get_attr: [ server1_floating_ip, floating_ip_address ] }
-  server2_admin_ip:
-    description: IP address of server2 in admin network
-    value: { get_attr: [ server2, first_address ] }
-  server2_public_ip:
-    description: Floating IP address of server2 in public network
-    value: { get_attr: [ server2_floating_ip, floating_ip_address ] }
-  server3_admin_ip:
-    description: IP address of server3 in admin network
-    value: { get_attr: [ server3, first_address ] }
-  server3_public_ip:
-    description: Floating IP address of server3 in public network
-    value: { get_attr: [ server3_floating_ip, floating_ip_address ] }
+ manager_admin_ip:
+   value: { get_attr: [manager, networks, get_param: admin_net_name, 0]}
+
+
