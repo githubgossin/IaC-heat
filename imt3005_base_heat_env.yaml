@@ -1,5 +1,0 @@
-parameters:
-  key_name: erikhje
-  public_net: ext-net
-  sec_group_linux: default,linux
-  sec_group_windows: default,windows

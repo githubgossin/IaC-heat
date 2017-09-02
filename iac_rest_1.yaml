@@ -2,7 +2,7 @@ heat_template_version: 2013-05-23
 
 description: >
   HOT template to add dir02, login01, login02 and test to borg.trek 
-  infrastructure, Note: THIS DEPENDS ON imt3005_base
+  infrastructure, Note: THIS DEPENDS ON iac_base
 
 parameters:
   key_name:
@@ -46,13 +46,13 @@ parameters:
       ID or name of public network for which floating IP addresses will be allocated
   admin_net:
     type: string
-    description: UUID of admin net created in base template (imt3005_admin_net)
+    description: UUID of admin net created in base template (iac_admin_net)
   admin_subnet:
     type: string
     description: UUID of admin subnet created in base template (192.168.180.0/24)
   internal_net:
     type: string
-    description: UUID of internal net created in base template (imt3005_internal_net)
+    description: UUID of internal net created in base template (iac_internal_net)
   internal_subnet:
     type: string
     description: UUID of internal subnet created in base template (192.168.190.0/24)

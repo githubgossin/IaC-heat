@@ -31,8 +31,8 @@ parameters:
 
 resources:
 
-  imt3005_base:
-    type: imt3005_base.yaml
+  iac_base:
+    type: iac_base.yaml
     properties:
       key_name:          { get_param: key_name }
       image_linux:       { get_param: image_linux }  
@@ -43,4 +43,12 @@ resources:
 
 outputs:
   manager_admin_ip:
-    value: { get_attr: [imt3005_base,manager_admin_ip] }
+    description: IP address of manager in the admin network
+    value: { get_attr: [iac_base,manager_admin_ip] }
+  dir01_admin_ip:
+    description: IP address of dir01 in the admin network
+    value: { get_attr: [iac_base,dir01_admin_ip] }
+  dir01_internal_ip:
+    description: IP address of dir01 in the internal network
+    value: { get_attr: [iac_base,dir01_internal_ip] }
+

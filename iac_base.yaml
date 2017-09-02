@@ -38,7 +38,7 @@ parameters:
   admin_net_name:
     type: string
     description: Name of admin network to be created
-    default: imt3005_admin_net
+    default: iac_admin_net
   admin_net_cidr:
     type: string
     description: Admin network address (CIDR notation)
@@ -58,7 +58,7 @@ parameters:
   internal_net_name:
     type: string
     description: Name of internal network to be created
-    default: imt3005_internal_net
+    default: iac_internal_net
   internal_net_cidr:
     type: string
     description: Internal network address (CIDR notation)
@@ -215,5 +215,7 @@ resources:
 outputs:
  manager_admin_ip:
    value: { get_attr: [manager, networks, get_param: admin_net_name, 0]}
-
-
+ dir01_admin_ip:
+   value: { get_attr: [dir01, networks, get_param: admin_net_name, 0]}
+ dir01_internal_ip:
+   value: { get_attr: [dir01, networks, get_param: internal_net_name, 0]}
