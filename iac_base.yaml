@@ -213,9 +213,18 @@ resources:
       port_id: { get_resource: dir01_port_internal }
 
 outputs:
- manager_admin_ip:
-   value: { get_attr: [manager, networks, get_param: admin_net_name, 0]}
- dir01_admin_ip:
-   value: { get_attr: [dir01, networks, get_param: admin_net_name, 0]}
- dir01_internal_ip:
-   value: { get_attr: [dir01, networks, get_param: internal_net_name, 0]}
+  manager_admin_ip:
+    value: { get_attr: [manager, networks, get_param: admin_net_name, 0]}
+  dir01_admin_ip:
+    value: { get_attr: [dir01, networks, get_param: admin_net_name, 0]}
+  dir01_internal_ip:
+    value: { get_attr: [dir01, networks, get_param: internal_net_name, 0]}
+  admin_net:
+    value: { get_resource: admin_net }
+  admin_subnet:
+    value: { get_resource: admin_subnet }
+  other_net:
+    value: { get_resource: other_net }
+  other_subnet:
+    value: { get_resource: other_subnet }
+

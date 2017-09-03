@@ -8,38 +8,18 @@ parameters:
   key_name:
     type: string
     description: Name of keypair to assign to servers
-  name_lin1:
-    type: string
-    description: Name of linux server
-    default: login01
-  name_lin2:
-    type: string
-    description: Name of linux server
-    default: login02
-  name_lin3:
-    type: string
-    description: Name of linux server
-    default: test
-  image_lin:
+  image_linux:
     type: string
     description: Name of image to use for servers
-    default: Ubuntu Server 16.04 (Xenial Xerus) amd64
-  flavor_lin:
-    type: string
-    description: Flavor to use for servers
-    default: m1.small
-  name_win:
-    type: string
-    description: Name of windows server
-    default: dir02
-  image_win:
+  image_windows:
     type: string
     description: Name of image to use for servers
-    default: Windows Server 2016 Std Eval
-  flavor_win:
-    type: string
-    description: Flavor to use for servers
-    default: m1.medium
+  sec_group_linux:
+    type: comma_delimited_list
+    description: Security groups
+  sec_group_windows:
+    type: comma_delimited_list
+    description: Security groups
   public_net:
     type: string
     description: >
@@ -50,18 +30,12 @@ parameters:
   admin_subnet:
     type: string
     description: UUID of admin subnet created in base template (192.168.180.0/24)
-  internal_net:
+  other_net:
     type: string
-    description: UUID of internal net created in base template (iac_internal_net)
-  internal_subnet:
+    description: UUID of other net created in base template (iac_other_net)
+  other_subnet:
     type: string
-    description: UUID of internal subnet created in base template (192.168.190.0/24)
-  sec_group_lin:
-    type: comma_delimited_list
-    description: Security groups
-  sec_group_win:
-    type: comma_delimited_list
-    description: Security groups
+    description: UUID of other subnet created in base template (192.168.190.0/24)
   dir01_ip:
     type: string
     description: IP address of server dir01 created in base template
@@ -71,187 +45,48 @@ parameters:
 
 resources:
 
-  server1:
-    type: OS::Nova::Server
+  test:
+    type: lib/managed_linux_server.yaml
     properties:
-      name: { get_param: name_lin1 }
-      image: { get_param: image_lin }
-      flavor: { get_param: flavor_lin }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: server1_port_admin }
-        - port: { get_resource: server1_port_internal }
-      user_data_format: RAW
-      user_data:
-        str_replace:
-          template: { get_file: ubuntu_boot.bash }
-          params:
-            manager_ip_address: { get_param: manager_ip }
-            dir01_ip_address: { get_param: dir01_ip }
+      key_name:          { get_param: key_name }
+      image:             { get_param: image_linux }
+      flavor:            m1.small
+      sec_group_linux:   { get_param: sec_group_linux }  
+      public_net:        { get_param: public_net }  
+      admin_net:         { get_param: admin_net }
+      admin_subnet:      { get_param: admin_subnet }
+      other_net:         { get_param: other_net }
+      other_subnet:      { get_param: other_subnet }
+      dir01_ip:          { get_param: dir01_ip }
+      manager_ip:        { get_param: manager_ip }
 
-  server1_port_admin:
-    type: OS::Neutron::Port
+  dir02:
+    type: lib/managed_windows_server.yaml
     properties:
-      network_id: { get_param: admin_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: admin_subnet }
+      key_name:          { get_param: key_name }
+      image:             { get_param: image_windows }  
+      flavor:            m1.medium
+      sec_group_windows: { get_param: sec_group_windows }  
+      public_net:        { get_param: public_net }  
 
-  server1_port_internal:
-    type: OS::Neutron::Port
+  login:
+    type: OS::Heat::ResourceGroup
     properties:
-      network_id: { get_param: internal_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: internal_subnet }
+      count: 3
+      resource_def:
+        type: lib/managed_linux_server.yaml
+        properties:
+          server_name:       login%index%
+          key_name:          { get_param: key_name }
+          image:             { get_param: image_linux }
+          flavor:            m1.small
+          sec_group_linux:   { get_param: sec_group_linux }
+          public_net:        { get_param: public_net }
+          admin_net:         { get_param: admin_net }
+          admin_subnet:      { get_param: admin_subnet }
+          other_net:         { get_param: other_net }
+          other_subnet:      { get_param: other_subnet }
+          dir01_ip:          { get_param: dir01_ip }
+          manager_ip:        { get_param: manager_ip }
 
-  server1_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: server1_port_internal }
 
-  server3:
-    type: OS::Nova::Server
-    properties:
-      name: { get_param: name_lin2 }
-      image: { get_param: image_lin }
-      flavor: { get_param: flavor_lin }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: server3_port_admin }
-        - port: { get_resource: server3_port_internal }
-      user_data_format: RAW
-      user_data:
-        str_replace:
-          template: { get_file: ubuntu_boot.bash }
-          params:
-            manager_ip_address: { get_param: manager_ip }
-            dir01_ip_address: { get_param: dir01_ip }
-
-  server3_port_admin:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: admin_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: admin_subnet }
-
-  server3_port_internal:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: internal_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: internal_subnet }
-
-  server3_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: server3_port_internal }
-
-  server4:
-    type: OS::Nova::Server
-    properties:
-      name: { get_param: name_lin3 }
-      image: { get_param: image_lin }
-      flavor: { get_param: flavor_lin }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: server4_port_admin }
-        - port: { get_resource: server4_port_internal }
-      user_data_format: RAW
-      user_data:
-        str_replace:
-          template: { get_file: ubuntu_boot.bash }
-          params:
-            manager_ip_address: { get_param: manager_ip }
-            dir01_ip_address: { get_param: dir01_ip }
- 
-  server4_port_admin:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: admin_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: admin_subnet }
-
-  server4_port_internal:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: internal_net }
-      security_groups: { get_param: sec_group_lin }
-      fixed_ips:
-        - subnet_id: { get_param: internal_subnet }
-
-  server4_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: server4_port_internal }
-
-# from http://www.cloudbase.it/openstack-windows-and-puppet/
-  server2:
-    type: OS::Nova::Server
-    properties:
-      name: { get_param: name_win }
-      image: { get_param: image_win }
-      flavor: { get_param: flavor_win }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: server2_port_admin }
-        - port: { get_resource: server2_port_internal }
-      user_data:
-        str_replace:
-          template: { get_file: windows_boot.ps1 }
-          params:
-            dir01_ip_address: { get_param: dir01_ip }
-
-  server2_port_admin:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: admin_net }
-      security_groups: { get_param: sec_group_win }
-      fixed_ips:
-        - subnet_id: { get_param: admin_subnet }
-
-  server2_port_internal:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: internal_net }
-      security_groups: { get_param: sec_group_win }
-      fixed_ips:
-        - subnet_id: { get_param: internal_subnet }
-
-  server2_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: server2_port_internal }
-
-outputs:
-  server1_private_ip:
-    description: IP address of server1 in private network
-    value: { get_attr: [ server1, first_address ] }
-  server1_public_ip:
-    description: Floating IP address of server1 in public network
-    value: { get_attr: [ server1_floating_ip, floating_ip_address ] }
-  server2_private_ip:
-    description: IP address of server2 in private network
-    value: { get_attr: [ server2, first_address ] }
-  server2_public_ip:
-    description: Floating IP address of server2 in public network
-    value: { get_attr: [ server2_floating_ip, floating_ip_address ] }
-  server3_private_ip:
-    description: IP address of server3 in private network
-    value: { get_attr: [ server3, first_address ] }
-  server3_public_ip:
-    description: Floating IP address of server3 in public network
-    value: { get_attr: [ server3_floating_ip, floating_ip_address ] }
-  server4_private_ip:
-    description: IP address of server4 in private network
-    value: { get_attr: [ server4, first_address ] }
-  server4_public_ip:
-    description: Floating IP address of server4 in public network
-    value: { get_attr: [ server4_floating_ip, floating_ip_address ] }

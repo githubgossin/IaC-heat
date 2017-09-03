@@ -15,11 +15,6 @@ parameters:
     type: string
     description: Name of image to use for Windows servers
     default: Windows Server 2016 Std Eval
-  public_net:
-    type: string
-    description: >
-      ID or name of public network for which floating IP addresses will be allocated
-    default: ext-net
   sec_group_linux:
     type: comma_delimited_list
     description: Security groups
@@ -28,7 +23,12 @@ parameters:
     type: comma_delimited_list
     description: Security groups
     default: default,windows
-
+  public_net:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+    default: ext-net
+ 
 resources:
 
   iac_base:
@@ -40,6 +40,23 @@ resources:
       public_net:        { get_param: public_net }  
       sec_group_linux:   { get_param: sec_group_linux }  
       sec_group_windows: { get_param: sec_group_windows }  
+
+  iac_rest_1:
+    type: iac_rest_1.yaml
+    depends_on: iac_base
+    properties:
+      key_name:          { get_param: key_name }
+      image_linux:       { get_param: image_linux }  
+      image_windows:     { get_param: image_windows }  
+      sec_group_linux:   { get_param: sec_group_linux }  
+      sec_group_windows: { get_param: sec_group_windows }
+      public_net:        { get_param: public_net }  
+      admin_net:         { get_attr: [iac_base,admin_net] }
+      admin_subnet:      { get_attr: [iac_base,admin_subnet] }
+      other_net:         { get_attr: [iac_base,other_net] }
+      other_subnet:      { get_attr: [iac_base,other_subnet] }
+      dir01_ip:          { get_attr: [iac_base,dir01_internal_ip] }
+      manager_ip:        { get_attr: [iac_base,dir01_admin_ip] }
 
 outputs:
   manager_admin_ip:
