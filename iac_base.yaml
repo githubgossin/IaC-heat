@@ -224,7 +224,7 @@ outputs:
   admin_subnet:
     value: { get_resource: admin_subnet }
   other_net:
-    value: { get_resource: other_net }
+    value: { get_resource: internal_net }
   other_subnet:
-    value: { get_resource: other_subnet }
+    value: { get_resource: internal_subnet }
 
