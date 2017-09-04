@@ -14,5 +14,9 @@ cat <<EOF >> /etc/dhcp/dhclient.conf
 supersede domain-name "borg.trek";
 supersede domain-name-servers dir01_ip_address;
 EOF
+cat <<EOF > /etc/network/interfaces.d/60-ens4.cfg
+auto ens4
+iface ens4 inet dhcp
+EOF
 reboot
 

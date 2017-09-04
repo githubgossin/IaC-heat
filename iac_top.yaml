@@ -56,7 +56,7 @@ resources:
       other_net:         { get_attr: [iac_base,other_net] }
       other_subnet:      { get_attr: [iac_base,other_subnet] }
       dir01_ip:          { get_attr: [iac_base,dir01_internal_ip] }
-      manager_ip:        { get_attr: [iac_base,dir01_admin_ip] }
+      manager_ip:        { get_attr: [iac_base,manager_admin_ip] }
 
 outputs:
   manager_admin_ip:
