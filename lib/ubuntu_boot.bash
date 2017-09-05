@@ -1,6 +1,7 @@
 #!/bin/bash -v
-wget -O /tmp/KIdc33Mf.deb https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
-dpkg -i /tmp/KIdc33Mf.deb
+tempdeb=$(mktemp /tmp/debpackage.XXXXXXXXXXXXXXXXXX) || exit 1
+wget -O "$tempdeb" https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+dpkg -i "$tempdeb"
 apt-get update
 apt-get -y install puppet-agent
 echo "$(ip a | grep -Eo 'inet ([0-9]*\.){3}[0-9]*' | tr -d 'inet ' | grep -v '^127') $(hostname).borg.trek $(hostname)" >> /etc/hosts
