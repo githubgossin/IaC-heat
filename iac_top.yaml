@@ -10,7 +10,7 @@ parameters:
   image_linux:
     type: string
     description: Name of image to use for GNU/Linux servers
-    default: Ubuntu Server 16.04 LTS (Xenial Xerus) amd64
+    default: Ubuntu Server 18.04 LTS (Bionic Beaver) amd64
   image_windows:
     type: string
     description: Name of image to use for Windows servers
@@ -27,7 +27,7 @@ parameters:
     type: string
     description: >
       ID or name of public network for which floating IP addresses will be allocated
-    default: ext-net
+    default: ntnu-internal
  
 resources:
 

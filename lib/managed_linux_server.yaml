@@ -15,7 +15,7 @@ parameters:
   image:
     type: string
     description: Name of image to use for servers
-    default: Ubuntu Server 16.04 LTS (Xenial Xerus) amd64
+    default: Ubuntu Server 18.04 LTS (Bionic Beaver) amd64
   flavor:
     type: string
     description: Flavor to use for servers
