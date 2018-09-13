@@ -11,13 +11,12 @@ cat <<EOF >> /etc/puppetlabs/puppet/puppet.conf
     server = manager.borg.trek
 EOF
 /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
-cat <<EOF >> /etc/dhcp/dhclient.conf
-supersede domain-name "borg.trek";
-supersede domain-name-servers dir01_ip_address;
+cat <<EOF >> /etc/netplan/50-cloud-init.yaml
+            nameservers:
+                search: [borg.trek]
+                addresses: [dir01_ip_address]
+        ens4:
+            dhcp4: true
+            set-name: ens4
 EOF
-cat <<EOF > /etc/network/interfaces.d/60-ens4.cfg
-auto ens4
-iface ens4 inet dhcp
-EOF
-reboot
-
+netplan apply
