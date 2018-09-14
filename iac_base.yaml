@@ -26,7 +26,7 @@ parameters:
   flavor_monitor:
     type: string
     description: Flavor to use for servers
-    default: m1.large
+    default: m1.medium
   flavor_dir01:
     type: string
     description: Flavor to use for servers
