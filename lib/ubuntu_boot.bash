@@ -17,6 +17,5 @@ cat <<EOF >> /etc/netplan/50-cloud-init.yaml
                 addresses: [dir01_ip_address]
         ens4:
             dhcp4: true
-            set-name: ens4
 EOF
 netplan apply
