@@ -1,6 +1,6 @@
 #!/bin/bash -v
 tempdeb=$(mktemp /tmp/debpackage.XXXXXXXXXXXXXXXXXX) || exit 1
-wget -O "$tempdeb" https://apt.puppetlabs.com/puppet5-release-bionic.deb
+wget -O "$tempdeb" https://apt.puppetlabs.com/puppet6-release-bionic.deb
 dpkg -i "$tempdeb"
 apt-get update
 apt-get -y install puppet-agent

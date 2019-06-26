@@ -3,7 +3,7 @@ Get-NetAdapter | Set-DnsClientServerAddress -ServerAddresses ("dir01_ip_address"
 Set-DnsClientGlobalSetting -SuffixSearchList @("borg.trek")
 Get-NetAdapter | Set-DnsClient -ConnectionSpecificSuffix "borg.trek"
 $ErrorActionPreference = "Stop"
-$puppet_agent_msi_url = "https://downloads.puppetlabs.com/windows/puppet-agent-x64-latest.msi"
+$puppet_agent_msi_url = "https://downloads.puppetlabs.com/windows/puppet/puppet-agent-x64-latest.msi"
 $puppet_agent_msi_path = Join-Path $ENV:TEMP puppet_agent.msi
 $wc = New-Object net.webclient
 $wc.Downloadfile($puppet_agent_msi_url, $puppet_agent_msi_path)
