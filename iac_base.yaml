@@ -18,7 +18,7 @@ parameters:
   image_windows:
     type: string
     description: Name of image to use for servers
-    default: Windows Server 2016 Std Eval
+    default: Windows Server 2019 Standard [Evaluation]
   flavor_manager:
     type: string
     description: Flavor to use for servers

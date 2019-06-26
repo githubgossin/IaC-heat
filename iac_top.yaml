@@ -14,7 +14,7 @@ parameters:
   image_windows:
     type: string
     description: Name of image to use for Windows servers
-    default: Windows Server 2016 Std Eval
+    default: Windows Server 2019 Standard [Evaluation]
   sec_group_linux:
     type: comma_delimited_list
     description: Security groups
