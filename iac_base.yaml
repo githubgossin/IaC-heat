@@ -18,7 +18,7 @@ parameters:
   flavor_manager:
     type: string
     description: Flavor to use for servers
-    default: m1.large
+    default: m1.medium
   public_net:
     type: string
     description: >
