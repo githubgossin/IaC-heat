@@ -7,10 +7,6 @@ parameters:
   key_name:
     type: string
     description: Name of keypair to assign to servers
-  infraservers:
-    type: comma_delimited_list
-    description: Name of additional infrastructure servers
-    default: dir,mon
   image_linux:
     type: string
     description: Name of image to use for GNU/Linux servers
@@ -56,7 +52,6 @@ resources:
       admin_net:         { get_attr: [iac_base,admin_net] }
       admin_subnet:      { get_attr: [iac_base,admin_subnet] }
       manager_ip:        { get_attr: [iac_base,manager_ip] }
-      infraservers:      { get_param: infraservers }
 
 outputs:
   manager_ip:
