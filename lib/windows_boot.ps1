@@ -11,4 +11,5 @@ Get-NetAdapter | Set-DnsClient -ConnectionSpecificSuffix "borg.trek"
 Add-Content "$env:windir\System32\drivers\etc\hosts" "$(& "C:\Program Files\Puppet Labs\Puppet\bin\facter.bat" networking.ip) $(hostname).borg.trek $(hostname)"
 Add-Content "$env:windir\System32\drivers\etc\hosts" "manager_ip_address manager.borg.trek"
 & "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" config set server manager.borg.trek --section main
+& "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" config set runinterval 300 --section main
 & "C:\Program Files\Puppet Labs\Puppet\bin\puppet.bat" resource service puppet ensure=running enable=true

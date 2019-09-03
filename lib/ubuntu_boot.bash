@@ -7,4 +7,5 @@ apt-get -y install puppet-agent
 echo "$(/opt/puppetlabs/bin/facter networking.ip) $(hostname).borg.trek $(hostname)" >> /etc/hosts
 echo "manager_ip_address manager.borg.trek manager" >> /etc/hosts
 /opt/puppetlabs/bin/puppet config set server manager.borg.trek --section main
+/opt/puppetlabs/bin/puppet config set runinterval 300 --section main
 /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
