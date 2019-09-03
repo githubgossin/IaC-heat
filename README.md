@@ -6,7 +6,7 @@ This template demonstrates five important features of orchestration setup:
 * Sequencing: having one substack (`iac_base`) complete before the next one (`iac_rest`) is launched
 * Passing information from one substack (`manager_ip_address`) to another
 * Including startup scripts (in the lib directory) which use data from Heat (`manager_ip_address`)
-* Iteration and variables: creating lin01 and lin02 
+* Iteration and variables: creating lin01 and lin02, win og lin 
 
 Your keypair must be provided in `iac_top_env.yaml` and two security groups (in addition to the default group): `linux` and `windows` should exist.
 
