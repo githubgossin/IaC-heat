@@ -46,9 +46,6 @@ parameters:
   sec_group_linux:
     type: comma_delimited_list
     description: Security groups
-  sec_group_windows:
-    type: comma_delimited_list
-    description: Security groups
 
 resources:
   admin_net:
