@@ -15,19 +15,7 @@ parameters:
     type: string
     description: Name of image to use for servers
     default: Ubuntu Server 18.04 LTS (Bionic Beaver) amd64
-  image_windows:
-    type: string
-    description: Name of image to use for servers
-    default: Windows Server 2019 Standard [Evaluation]
   flavor_manager:
-    type: string
-    description: Flavor to use for servers
-    default: m1.large
-  flavor_monitor:
-    type: string
-    description: Flavor to use for servers
-    default: m1.medium
-  flavor_dir01:
     type: string
     description: Flavor to use for servers
     default: m1.large
@@ -55,26 +43,6 @@ parameters:
     type: string
     description: End of admin network IP address allocation pool
     default: 192.168.180.199
-  internal_net_name:
-    type: string
-    description: Name of internal network to be created
-    default: iac_internal_net
-  internal_net_cidr:
-    type: string
-    description: Internal network address (CIDR notation)
-    default: 192.168.190.0/24
-  internal_net_gateway:
-    type: string
-    description: Internal network gateway address
-    default: 192.168.190.1
-  internal_net_pool_start:
-    type: string
-    description: Start of admin network IP address allocation pool
-    default: 192.168.190.100
-  internal_net_pool_end:
-    type: string
-    description: End of internal network IP address allocation pool
-    default: 192.168.190.199
   sec_group_linux:
     type: comma_delimited_list
     description: Security groups
@@ -98,21 +66,6 @@ resources:
         - start: { get_param: admin_net_pool_start }
           end: { get_param: admin_net_pool_end }
 
-  internal_net:
-    type: OS::Neutron::Net
-    properties:
-      name: { get_param: internal_net_name }
-
-  internal_subnet:
-    type: OS::Neutron::Subnet
-    properties:
-      network_id: { get_resource: internal_net }
-      cidr: { get_param: internal_net_cidr }
-      gateway_ip: { get_param: internal_net_gateway }
-      allocation_pools:
-        - start: { get_param: internal_net_pool_start }
-          end: { get_param: internal_net_pool_end }
-
   router:
     type: OS::Neutron::Router
     properties:
@@ -124,12 +77,6 @@ resources:
     properties:
       router_id: { get_resource: router }
       subnet_id: { get_resource: admin_subnet }
-
-  router_interface_internal:
-    type: OS::Neutron::RouterInterface
-    properties:
-      router_id: { get_resource: router }
-      subnet_id: { get_resource: internal_subnet }
 
   manager:
     type: OS::Nova::Server
@@ -155,76 +102,10 @@ resources:
       floating_network: { get_param: public_net }
       port_id: { get_resource: manager_port }
 
-  monitor:
-    type: OS::Nova::Server
-    properties:
-      name: monitor
-      image: { get_param: image_linux }
-      flavor: { get_param: flavor_monitor }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: monitor_port }
-
-  monitor_port:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_resource: admin_net }
-      security_groups: { get_param: sec_group_linux }
-      fixed_ips:
-        - subnet_id: { get_resource: admin_subnet }
-
-  monitor_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: monitor_port }
-
-  dir01:
-    type: OS::Nova::Server
-    properties:
-      name: dir01
-      image: { get_param: image_windows }
-      flavor: { get_param: flavor_dir01 }
-      key_name: { get_param: key_name }
-      networks:
-        - port: { get_resource: dir01_port_admin }
-        - port: { get_resource: dir01_port_internal }
-
-  dir01_port_admin:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_resource: admin_net }
-      security_groups: { get_param: sec_group_windows }
-      fixed_ips:
-        - subnet_id: { get_resource: admin_subnet }
-
-  dir01_port_internal:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_resource: internal_net }
-      security_groups: { get_param: sec_group_windows }
-      fixed_ips:
-        - subnet_id: { get_resource: internal_subnet }
-
-  dir01_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network: { get_param: public_net }
-      port_id: { get_resource: dir01_port_internal }
-
 outputs:
-  manager_admin_ip:
+  manager_ip:
     value: { get_attr: [manager, networks, get_param: admin_net_name, 0]}
-  dir01_admin_ip:
-    value: { get_attr: [dir01, networks, get_param: admin_net_name, 0]}
-  dir01_internal_ip:
-    value: { get_attr: [dir01, networks, get_param: internal_net_name, 0]}
   admin_net:
     value: { get_resource: admin_net }
   admin_subnet:
     value: { get_resource: admin_subnet }
-  other_net:
-    value: { get_resource: internal_net }
-  other_subnet:
-    value: { get_resource: internal_subnet }
-
