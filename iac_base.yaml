@@ -4,7 +4,7 @@ description: >
   HOT template to create a new neutron network plus a router to the public
   network, and for deploying three servers into the new network. The template also
   assigns floating IP addresses to each server so they are routable from the
-  public network. This creates the basic borg.trek infrastructure with a 
+  public network. This creates the basic node.consul infrastructure with a 
   manager (Ubuntu), a monitor (Ubuntu) and a DNS server (Windows Server)
 
 parameters:

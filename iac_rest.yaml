@@ -1,7 +1,7 @@
 heat_template_version: 2013-05-23
 
 description: >
-  HOT template to add dir02, login01, login02 and test to borg.trek 
+  HOT template to add dir02, login01, login02 and test to node.consul 
   infrastructure, Note: THIS DEPENDS ON iac_base
 
 parameters:
